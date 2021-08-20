@@ -1,12 +1,13 @@
 import { Controller, Get } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @MessagePattern('auth.get-test')
+  getTest(@Payload() message: any): any {
+    return this.appService.getTest(message);
   }
 }
