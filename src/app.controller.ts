@@ -1,4 +1,10 @@
-import { Controller } from '@nestjs/common';
+import {
+  isCreateUserEvent,
+  isUpdateUserEvent,
+  Topics,
+  UserEvent,
+} from '@indigobit/nubia.common';
+import { BadRequestException, Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AppService } from './app.service';
 
@@ -6,8 +12,22 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @MessagePattern('auth.get-test')
-  getTest(@Payload() message: any): any {
-    return this.appService.getTest(message);
+  @MessagePattern(Topics.USERS)
+  users(@Payload() { value }: { value: UserEvent }): any {
+    const { type, data } = value;
+    if (!type) {
+      throw new BadRequestException('Missing "type" in UserEvent');
+    }
+
+    console.log(type);
+
+    if (isCreateUserEvent(value)) {
+      return this.appService.createUser(data);
+    }
+    if (isUpdateUserEvent(value)) {
+      return this.appService.updateUser(data);
+    }
+
+    console.log(`Ignoring ${type}`);
   }
 }
