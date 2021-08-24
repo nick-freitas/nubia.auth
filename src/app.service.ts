@@ -1,17 +1,11 @@
-import { User } from '@indigobit/nubia.common';
 import { BadRequestException, Injectable } from '@nestjs/common';
-// import { Low, JSONFile } from 'lowdb';
-
-// Use JSON file for storage
-type Data = {
-  users: User[];
-};
-// const adapter = new JSONFile<Data>('db.json');
-// const db = new Low<Data>(adapter);
-const db: { data: Data } = { data: { users: [] } };
+import { User } from '@indigobit/nubia.common';
+import { DBService } from './db.service';
 
 @Injectable()
 export class AppService {
+  constructor(private readonly DBService: DBService) {}
+
   async createUser(data: Partial<User>): Promise<any> {
     const { fullName, id, email, password } = data;
 
@@ -28,60 +22,48 @@ export class AppService {
       throw new Error('Missing Id');
     }
 
-    // await db.read();
-    // db.data ||= { users: [] };
-
     const user: User = {
+      id: id,
       email: email,
       fullName: fullName,
-      id: id,
       password: password,
       active: true,
       createdAt: new Date(),
       version: 1,
     };
 
-    db.data.users.push(user);
+    this.DBService.users.push({ ...user });
 
-    console.log('about to return in ms');
+    delete user.password;
 
-    const { password: _password, ...remainder } = user;
-
-    return remainder;
+    return user;
   }
 
   async updateUser(data: Partial<User>): Promise<any> {
     const { fullName, id } = data;
 
     if (!fullName) {
+      // rest
       throw new Error('Missing Full Name');
     }
+
     if (!id) {
       throw new Error('Missing Id');
     }
 
-    const index = db.data.users.findIndex(
+    const index = this.DBService.users.findIndex(
       (user) => user.id === id && user.active === true,
     );
     if (index === -1)
       throw new BadRequestException('Bad Id in User Update Request');
 
-    const user = db.data.users[index];
+    const user = { ...this.DBService.users[index] };
     user.fullName = fullName;
     user.version += 1;
+    this.DBService.users[index] = { ...user };
 
-    const { password, ...remainder } = user;
+    delete user.password;
 
-    return remainder;
-
-    // const reply = this.authClient
-    //   .send<string>('gamebooks', {
-    //     type: UserEventType.USER_UPDATED,
-    //     data: remainder,
-    //   })
-    //   .pipe(map((message: string) => console.info(message)))
-    //   .toPromise();
-
-    // return reply;
+    return user;
   }
 }

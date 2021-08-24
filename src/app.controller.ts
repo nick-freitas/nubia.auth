@@ -14,6 +14,7 @@ export class AppController {
 
   @MessagePattern(Topics.USERS)
   users(@Payload() { value }: { value: UserEvent }): any {
+    console.log('message pattern users in auth');
     const { type, data } = value;
     if (!type) {
       throw new BadRequestException('Missing "type" in UserEvent');
