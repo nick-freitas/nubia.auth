@@ -1,7 +1,9 @@
 import {
+  CreateUserEvent,
   isCreateUserEvent,
   isUpdateUserEvent,
   Topics,
+  UpdateUserEvent,
   UserEvent,
 } from '@indigobit/nubia.common';
 import { BadRequestException, Controller } from '@nestjs/common';
@@ -13,7 +15,9 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @MessagePattern(Topics.USERS)
-  users(@Payload() { value }: { value: UserEvent }): any {
+  users(
+    @Payload() { value }: { value: CreateUserEvent | UpdateUserEvent },
+  ): any {
     console.log('message pattern users in auth');
     const { type, data } = value;
     if (!type) {
@@ -23,10 +27,11 @@ export class AppController {
     console.log(type);
 
     if (isCreateUserEvent(value)) {
-      return this.appService.createUser(data);
+      return this.appService.createUser(data as CreateUserEvent['data']);
     }
+
     if (isUpdateUserEvent(value)) {
-      return this.appService.updateUser(data);
+      return this.appService.updateUser(data as UpdateUserEvent['data']);
     }
 
     console.log(`Ignoring ${type}`);

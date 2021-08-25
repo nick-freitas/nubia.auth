@@ -1,12 +1,16 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { User } from '@indigobit/nubia.common';
+import {
+  CreateUserEvent,
+  UpdateUserEvent,
+  User,
+} from '@indigobit/nubia.common';
 import { DBService } from './db.service';
 
 @Injectable()
 export class AppService {
   constructor(private readonly DBService: DBService) {}
 
-  async createUser(data: Partial<User>): Promise<any> {
+  async createUser(data: CreateUserEvent['data']): Promise<any> {
     const { fullName, id, email, password } = data;
 
     if (!email) {
@@ -39,7 +43,7 @@ export class AppService {
     return user;
   }
 
-  async updateUser(data: Partial<User>): Promise<any> {
+  async updateUser(data: UpdateUserEvent['data']): Promise<any> {
     const { fullName, id } = data;
 
     if (!fullName) {
