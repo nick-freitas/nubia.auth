@@ -1,16 +1,26 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import {
+  AuthorizedUser,
   CreateUserEvent,
   UpdateUserEvent,
   User,
 } from '@indigobit/nubia.common';
 import { DBService } from './db.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AppService {
-  constructor(private readonly DBService: DBService) {}
+  constructor(
+    private readonly DBService: DBService,
+    private jwtService: JwtService,
+  ) {}
 
-  async createUser(data: CreateUserEvent['data']): Promise<any> {
+  async createUser(data: CreateUserEvent['data']): Promise<AuthorizedUser> {
     const { fullName, id, email, password } = data;
 
     if (!email) {
@@ -26,11 +36,23 @@ export class AppService {
       throw new Error('Missing Id');
     }
 
-    const user: User = {
+    let user: User = { ...this.DBService.users.find((u) => u.id === id) };
+    // if the id exists, this event was already processed.
+    if (user) {
+      return {
+        ...user,
+        ...this.signIn(await this.validateUser(user.email, user.password)),
+      };
+    }
+
+    user = { ...this.DBService.users.find((u) => u.email === email) };
+    if (user) throw new BadRequestException('Email is already in use');
+
+    user = {
       id: id,
       email: email,
       fullName: fullName,
-      password: password,
+      password: await bcrypt.hash(password, 12),
       active: true,
       createdAt: new Date(),
       version: 1,
@@ -38,12 +60,13 @@ export class AppService {
 
     this.DBService.users.push({ ...user });
 
-    delete user.password;
-
-    return user;
+    return {
+      ...user,
+      ...this.signIn(await this.validateUser(user.email, user.password)),
+    };
   }
 
-  async updateUser(data: UpdateUserEvent['data']): Promise<any> {
+  async updateUser(data: UpdateUserEvent['data']): Promise<User> {
     const { fullName, id } = data;
 
     if (!fullName) {
@@ -69,5 +92,29 @@ export class AppService {
     delete user.password;
 
     return user;
+  }
+
+  async validateUser(email: string, pass: string): Promise<User> {
+    const user = await this.DBService.users.find(
+      (user) => user.email === email,
+    );
+    if (!user) {
+      throw new UnauthorizedException('Invalid Email');
+    }
+
+    const matched = await bcrypt.compare(pass, user?.password);
+    if (!matched) {
+      throw new UnauthorizedException('Invalid Password');
+    }
+
+    return user;
+  }
+
+  signIn(user: User): { access_token: string } {
+    const payload = { email: user.email, sub: user.id };
+
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 }
