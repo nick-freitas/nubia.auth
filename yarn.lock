@@ -404,10 +404,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.0.tgz#87de7af9c231826fdd68ac7258f77c429e0e5fcf"
   integrity sha512-wdppn25U8z/2yiaT6YGquE6X8sSv7hNMWSXYSSU1jGv/yd6XqjXgTDJ8KP4NgjTXfJ3GbRjeeb8RTV7a/VpM+w==
 
-"@indigobit/nubia.common@^0.1.44":
-  version "0.1.44"
-  resolved "https://registry.yarnpkg.com/@indigobit/nubia.common/-/nubia.common-0.1.44.tgz#5348c8b97a37adfeedb1588e3ae0d019072a6b8f"
-  integrity sha512-gYa4DLytzC6NJEISQUk6541/ctsQu3PECpIDWaSzMVNgRGjViY3ARRX2hWypLuIb5FFiXFFr2pdAKpkGLH3GzA==
+"@indigobit/nubia.common@^0.1.53":
+  version "0.1.53"
+  resolved "https://registry.yarnpkg.com/@indigobit/nubia.common/-/nubia.common-0.1.53.tgz#eff826da963b32bee1b7f59d4e4f40aecd0b8399"
+  integrity sha512-ZofBtTEwU+G3RUHb5K2/jXPF4ilsnMFXZpYPXN8TaASnnud0NIx9wFcfAawj9YN9UAe7WWHZuOLKi+Hz6GVIZg==
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
