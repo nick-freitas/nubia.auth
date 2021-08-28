@@ -19,7 +19,7 @@ export class AppController {
     @Payload() { value }: { value: CreateUserEvent | UpdateUserEvent },
   ): any {
     console.log('message pattern users in auth');
-    const { type, data } = value;
+    const { type, data, auth } = value;
     if (!type) {
       throw new BadRequestException('Missing "type" in UserEvent');
     }
