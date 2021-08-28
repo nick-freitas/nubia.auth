@@ -12,6 +12,8 @@ import {
 } from '@indigobit/nubia.common';
 import { DBService } from './db.service';
 import { JwtService } from '@nestjs/jwt';
+import { AuthRoles } from '@indigobit/nubia.common/build/auth/auth-roles';
+import { ok } from 'assert';
 
 @Injectable()
 export class AppService {
@@ -56,7 +58,13 @@ export class AppService {
       active: true,
       createdAt: new Date(),
       version: 1,
+      roles: [AuthRoles.user],
     };
+
+    // this is initial admin user
+    if (email === 'admin@nubiagamebooks.com') {
+      user.roles = [AuthRoles.admin];
+    }
 
     this.DBService.users.push({ ...user });
 
@@ -66,17 +74,25 @@ export class AppService {
     };
   }
 
-  async updateUser(data: UpdateUserEvent['data']): Promise<User> {
+  async updateUser(
+    data: UpdateUserEvent['data'],
+    auth: UpdateUserEvent['auth'],
+  ): Promise<User> {
     const { fullName, id } = data;
 
     if (!fullName) {
-      // rest
       throw new Error('Missing Full Name');
     }
 
     if (!id) {
       throw new Error('Missing Id');
     }
+
+    // authorization
+    if (id !== auth?.userId && !auth?.roles.includes(AuthRoles.admin))
+      throw new UnauthorizedException(
+        'You are not authorized to make that change',
+      );
 
     const index = this.DBService.users.findIndex(
       (user) => user.id === id && user.active === true,
