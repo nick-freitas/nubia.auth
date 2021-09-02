@@ -13,12 +13,11 @@ import {
 import { DBService } from './db.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthRoles } from '@indigobit/nubia.common/build/auth/auth-roles';
-import { ok } from 'assert';
 
 @Injectable()
 export class AppService {
   constructor(
-    private readonly DBService: DBService,
+    private readonly dBService: DBService,
     private jwtService: JwtService,
   ) {}
 
@@ -38,7 +37,7 @@ export class AppService {
       throw new Error('Missing Id');
     }
 
-    let user: User = { ...this.DBService.users.find((u) => u.id === id) };
+    let user: User = { ...this.dBService.users.find((u) => u.id === id) };
     // if the id exists, this event was already processed.
     if (user) {
       return {
@@ -47,7 +46,7 @@ export class AppService {
       };
     }
 
-    user = { ...this.DBService.users.find((u) => u.email === email) };
+    user = { ...this.dBService.users.find((u) => u.email === email) };
     if (user) throw new BadRequestException('Email is already in use');
 
     user = {
@@ -66,7 +65,7 @@ export class AppService {
       user.roles = [AuthRoles.admin];
     }
 
-    this.DBService.users.push({ ...user });
+    this.dBService.users.push({ ...user });
 
     return {
       ...user,
@@ -94,16 +93,16 @@ export class AppService {
         'You are not authorized to make that change',
       );
 
-    const index = this.DBService.users.findIndex(
+    const index = this.dBService.users.findIndex(
       (user) => user.id === id && user.active === true,
     );
     if (index === -1)
       throw new BadRequestException('Bad Id in User Update Request');
 
-    const user = { ...this.DBService.users[index] };
+    const user = { ...this.dBService.users[index] };
     user.fullName = fullName;
     user.version += 1;
-    this.DBService.users[index] = { ...user };
+    this.dBService.users[index] = { ...user };
 
     delete user.password;
 
@@ -111,7 +110,7 @@ export class AppService {
   }
 
   async validateUser(email: string, pass: string): Promise<User> {
-    const user = await this.DBService.users.find(
+    const user = await this.dBService.users.find(
       (user) => user.email === email,
     );
     if (!user) {

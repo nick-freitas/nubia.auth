@@ -404,10 +404,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.0.tgz#87de7af9c231826fdd68ac7258f77c429e0e5fcf"
   integrity sha512-wdppn25U8z/2yiaT6YGquE6X8sSv7hNMWSXYSSU1jGv/yd6XqjXgTDJ8KP4NgjTXfJ3GbRjeeb8RTV7a/VpM+w==
 
-"@indigobit/nubia.common@^0.1.58":
-  version "0.1.58"
-  resolved "https://registry.yarnpkg.com/@indigobit/nubia.common/-/nubia.common-0.1.58.tgz#4069ef1b1188840892c797c8cc29b48703ec6fdb"
-  integrity sha512-gx9hOcvxEm3dGHEOj0ckUUZ/7ZHMDTDskCvPBqhlYkcPNFUFkReuVyU6ZIPWozpfEduuVUUbCgU8m+Wyy9wkwQ==
+"@indigobit/nubia.common@^0.1.62":
+  version "0.1.62"
+  resolved "https://registry.yarnpkg.com/@indigobit/nubia.common/-/nubia.common-0.1.62.tgz#cf5eb1344c01200a1e99c5d11869e60f572c742e"
+  integrity sha512-udnHxNetNuMmmv0rsMAQ/ce1BSJEaThtfnsWnzduheDBEcXE4ocZs56DFjFVatk4kCsw3M94bfSgPKXjB+h4Mw==
   dependencies:
     assert "^2.0.0"
 
