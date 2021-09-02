@@ -31,7 +31,7 @@ export class AppController {
     }
 
     if (isUpdateUserEvent(value)) {
-      return this.appService.updateUser(data as UpdateUserEvent['data']);
+      return this.appService.updateUser(data as UpdateUserEvent['data'], auth);
     }
 
     console.log(`Ignoring ${type}`);
